@@ -21,11 +21,9 @@ module.exports = {
 
     checkIsPresent: async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const userById = await User.findById(id);
-            
-            console.log(userById);
-            
+
             if (!userById) {
                 throw new ErrorHandler(responseCodes.BAD_REQUEST, RECORD_NOT_FOUND_BY_ID.massage, RECORD_NOT_FOUND_BY_ID.code);
             }

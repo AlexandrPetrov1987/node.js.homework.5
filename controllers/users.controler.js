@@ -1,6 +1,6 @@
 
 const { User } = require('../dataBase');
-const { responseCodes } = require('../const');
+const { responseCodes, usersConst } = require('../const');
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -34,16 +34,16 @@ module.exports = {
         }
     },
 
-    // deleteUserByLogin: async (req, res,next) => {
-    //     try {
-    //         const { user } = req;
-    //         // await usersServices.deleteUser(user);
-    //
-    //         res.json(responseCodes.CONTENT_DELETE);
-    //     } catch (e) {
-    //         next(e);
-    //     }
-    // },
+    deleteUserByLogin: async (req, res,next) => {
+        try {
+            const { user } = req;
+            await User.findByIdAndDelete(user._id);
+
+            res.status(responseCodes.DELETE).json(usersConst.DELETE_STATUS_SUCCESS);
+        } catch (e) {
+            next(e);
+        }
+    },
 
     // updateUserByLogin: async (req, res,next) => {
     //     try {
