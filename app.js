@@ -1,9 +1,9 @@
 const express = require('express');
 
+const {RECORD_NOT_FOUND} = require('./error/error-messages');
 const mongoose = require('mongoose');
 const { usersRouter } = require('./routes');
-const { usersConst } = require('./const');
-// const ErrorH = require('./error/errorHandler');
+const { usersConst, responseCodes } = require('./const');
 
 const app = express();
 _mongooseConnector();
@@ -23,15 +23,16 @@ function _handleErrors(err, req, res, next) {
     res
         .status(err.status)
         .json({
-        message: err.message || 'Unknown error',
-        customCode: err.code || 0
-    });
+            message: err.message || usersConst.UNKNOWN_ERROR,
+            customCode: err.code || responseCodes.UNKNOWN_ERROR
+        });
 }
 
 function _notFoundHandler(req, res, next) {
     next({
-        status: 404,
-        message: 'Route not found'
+        status: responseCodes.BAD_REQUEST,
+        message: RECORD_NOT_FOUND.massage,
+        code: RECORD_NOT_FOUND.code
     });
 }
 

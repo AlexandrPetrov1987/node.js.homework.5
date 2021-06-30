@@ -5,4 +5,5 @@ module.exports = {
     BAD_REQUEST: 404,
     CONFLICT: 409,
     CONTENT_DELETE: 410,
+    UNKNOWN_ERROR: 0
 };
