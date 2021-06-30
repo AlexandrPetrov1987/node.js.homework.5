@@ -3,7 +3,7 @@ module.exports = {
     CREATED_OR_UPDATE: 201,
     DELETE: 204,
     BAD_REQUEST: 404,
-    CONFLICT: 409,
+    CONFLICT: '409',
     CONTENT_DELETE: 410,
     UNKNOWN_ERROR: 0
 };

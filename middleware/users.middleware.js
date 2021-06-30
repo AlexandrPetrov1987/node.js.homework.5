@@ -2,7 +2,7 @@ const { ErrorHandler } = require('../error');
 const {
     RECORD_NOT_FOUND, RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, FIELDS_ARE_EMPTY_ERR
 } = require('../error/error-messages');
-const { responseCodes } = require('../error');
+const { responseCodes } = require('../const');
 const { User } = require('../dataBase');
 
 module.exports = {
