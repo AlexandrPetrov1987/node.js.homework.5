@@ -20,7 +20,9 @@ app.listen(usersConst.PORT, () => {
 
 // eslint-disable-next-line no-unused-vars
 function _handleErrors(err, req, res, next) {
-    res.status(err.status).json({
+    res
+        .status(err.status)
+        .json({
         message: err.message || 'Unknown error',
         customCode: err.code || 0
     });

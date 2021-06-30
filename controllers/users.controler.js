@@ -39,20 +39,20 @@ module.exports = {
             const { user } = req;
             await User.findByIdAndDelete(user._id);
 
-            res.status(responseCodes.DELETE).json(usersConst.DELETE_STATUS_SUCCESS);
+            res.status(responseCodes.DELETE);
         } catch (e) {
             next(e);
         }
     },
 
-    // updateUserByLogin: async (req, res,next) => {
-    //     try {
-    //         const { body, user } = req;
-    //         await usersServices.updateUser(user, body);
-    //
-    //         res.json(responseCodes.CREATED);
-    //     } catch (e) {
-    //         next(e);
-    //     }
-    // }
+    updateUserByLogin: async (req, res,next) => {
+        try {
+            const { body, user } = req;
+            await   User.findByIdAndUpdate(user._id,body);
+
+            res.status(responseCodes.CREATED_OR_UPDATE).json(usersConst.FILE_IS_UPDATE);
+        } catch (e) {
+            next(e);
+        }
+    }
 };
