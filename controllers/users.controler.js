@@ -2,11 +2,9 @@ const { User } = require('../dataBase');
 const { responseCodes, usersConst } = require('../const');
 
 module.exports = {
-    getAllUsers: async (req, res, next) => {
+    getAllUsers: (req, res, next) => {
         try {
-            const users = await User.find({});
-
-            res.status(responseCodes.SUCCESS).json(users);
+            res.status(responseCodes.SUCCESS).json(req.message || req.users);
         } catch (e) {
             next(e);
         }
@@ -38,7 +36,7 @@ module.exports = {
             const { user } = req;
             await User.findByIdAndDelete(user._id);
 
-            res.status(responseCodes.DELETE);
+            res.sendStatus(responseCodes.DELETE);
         } catch (e) {
             next(e);
         }
