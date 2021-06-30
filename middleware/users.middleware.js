@@ -2,8 +2,8 @@ const { ErrorHandler } = require('../error');
 const {
     RECORD_NOT_FOUND, RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, FIELDS_ARE_EMPTY_ERR
 } = require('../error/error-messages');
-const {responseCodes} = require('../error');
-const {User} = require('../dataBase');
+const { responseCodes } = require('../error');
+const { User } = require('../dataBase');
 
 module.exports = {
     checkIsNotEmpty: async (req, res, next) => {
@@ -36,7 +36,7 @@ module.exports = {
 
     checkValid: async (req, res, next) => {
         try {
-            const {login, password, email} = req.body;
+            const { login, password, email } = req.body;
             const allUsers = await User.find({});
 
             if (!(login || password || email)) {

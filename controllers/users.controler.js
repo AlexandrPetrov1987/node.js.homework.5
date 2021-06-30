@@ -1,4 +1,3 @@
-
 const { User } = require('../dataBase');
 const { responseCodes, usersConst } = require('../const');
 
@@ -34,7 +33,7 @@ module.exports = {
         }
     },
 
-    deleteUserByLogin: async (req, res,next) => {
+    deleteUserByLogin: async (req, res, next) => {
         try {
             const { user } = req;
             await User.findByIdAndDelete(user._id);
@@ -45,10 +44,10 @@ module.exports = {
         }
     },
 
-    updateUserByLogin: async (req, res,next) => {
+    updateUserByLogin: async (req, res, next) => {
         try {
             const { body, user } = req;
-            await   User.findByIdAndUpdate(user._id,body);
+            await User.findByIdAndUpdate(user._id, body);
 
             res.status(responseCodes.CREATED_OR_UPDATE).json(usersConst.FILE_IS_UPDATE);
         } catch (e) {
