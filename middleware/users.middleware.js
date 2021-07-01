@@ -2,7 +2,7 @@ const { responseCodes, usersConst } = require('../const');
 const { User } = require('../dataBase');
 const { ErrorHandler } = require('../error');
 const {
-    RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, FIELDS_ARE_EMPTY_ERR, WRONG_PASSWORD,ERROR_LOGIN_CONFLICT
+    RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, FIELDS_ARE_EMPTY_ERR, WRONG_PASSWORD, ERROR_LOGIN_CONFLICT
 } = require('../error/error-messages');
 const { passwordHasher } = require('../helpers');
 const { validator } = require('../validators/index');
@@ -47,13 +47,13 @@ module.exports = {
             if (!(login || password || email)) {
                 throw new ErrorHandler(responseCodes.CONFLICT, FIELDS_ARE_EMPTY_ERR.massage, FIELDS_ARE_EMPTY_ERR.code);
             }
+            if (error) {
+                throw new ErrorHandler(responseCodes.BAD_REQUEST, error.details[0].message, WRONG_PASSWORD.code);
+            }
             if (emailDb) {
                 throw new ErrorHandler(responseCodes.CONFLICT, ERROR_EMAIL_CONFLICT.massage, ERROR_EMAIL_CONFLICT.code);
             } if (loginDb) {
                 throw new ErrorHandler(responseCodes.CONFLICT, ERROR_LOGIN_CONFLICT.massage, ERROR_LOGIN_CONFLICT.code);
-            }
-            if (error) {
-                throw new ErrorHandler(responseCodes.BAD_REQUEST, error.details[0].message, WRONG_PASSWORD.code);
             }
             next();
         } catch (e) {
