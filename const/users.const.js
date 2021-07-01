@@ -6,5 +6,5 @@ module.exports = {
     EMAIL_IS_ALREADY_USE: 'this email is already in use',
     DELETE_STATUS_SUCCESS: 'success delete',
     UNKNOWN_ERROR: 'Unknown error',
-    DATABASE_IS_EMPTY: 'database is empty'
+    DATABASE_IS_EMPTY: 'database is empty',
 };

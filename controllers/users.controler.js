@@ -1,5 +1,6 @@
 const { User } = require('../dataBase');
 const { responseCodes, usersConst } = require('../const');
+const { passwordHasher } = require('../helpers');
 
 module.exports = {
     getAllUsers: (req, res, next) => {
@@ -22,8 +23,9 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
-            const { body } = req;
-            const createdUser = await User.create(body);
+            const { password } = req.body;
+            const hashedPassword = await passwordHasher.hash(password);
+            const createdUser = await User.create({ ...req.body, password: hashedPassword });
 
             res.status(responseCodes.CREATED_OR_UPDATE).json(createdUser);
         } catch (e) {
@@ -48,6 +50,16 @@ module.exports = {
             await User.findByIdAndUpdate(user._id, body);
 
             res.status(responseCodes.CREATED_OR_UPDATE).json(usersConst.FILE_IS_UPDATE);
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    auth: (req, res, next) => {
+        try {
+            const { userByEmail } = req;
+
+            res.json(userByEmail);
         } catch (e) {
             next(e);
         }

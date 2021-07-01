@@ -1,10 +1,11 @@
-const { ErrorHandler } = require('../error');
-const { usersConst } = require('../const');
-const {
-    RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, FIELDS_ARE_EMPTY_ERR
-} = require('../error/error-messages');
-const { responseCodes } = require('../const');
+const { responseCodes, usersConst } = require('../const');
 const { User } = require('../dataBase');
+const { ErrorHandler } = require('../error');
+const {
+    RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, FIELDS_ARE_EMPTY_ERR, WRONG_PASSWORD,ERROR_LOGIN_CONFLICT
+} = require('../error/error-messages');
+const { passwordHasher } = require('../helpers');
+const { validator } = require('../validators/index');
 
 module.exports = {
     checkIsNotEmpty: async (req, res, next) => {
@@ -40,18 +41,44 @@ module.exports = {
         try {
             const { login, password, email } = req.body;
             const emailDb = await User.findOne({ email });
+            const loginDb = await User.findOne({ login });
+            const { error } = validator.createUser.validate(req.body);
 
             if (!(login || password || email)) {
                 throw new ErrorHandler(responseCodes.CONFLICT, FIELDS_ARE_EMPTY_ERR.massage, FIELDS_ARE_EMPTY_ERR.code);
             }
-
             if (emailDb) {
                 throw new ErrorHandler(responseCodes.CONFLICT, ERROR_EMAIL_CONFLICT.massage, ERROR_EMAIL_CONFLICT.code);
+            } if (loginDb) {
+                throw new ErrorHandler(responseCodes.CONFLICT, ERROR_LOGIN_CONFLICT.massage, ERROR_LOGIN_CONFLICT.code);
             }
-
+            if (error) {
+                throw new ErrorHandler(responseCodes.BAD_REQUEST, error.details[0].message, WRONG_PASSWORD.code);
+            }
             next();
         } catch (e) {
             next(e);
         }
     },
+
+    checkedPasswordAuth: async (req, res, next) => {
+        try {
+            const { password, email } = req.body;
+            const userByEmail = await User.findOne({ email }).select('+password');
+
+            if (!(password || email)) {
+                throw new ErrorHandler(responseCodes.CONFLICT, FIELDS_ARE_EMPTY_ERR.massage, FIELDS_ARE_EMPTY_ERR.code);
+            }
+            if (!userByEmail) {
+                throw new ErrorHandler(responseCodes.WRONG_EMAIL_OR_PASSWORD, WRONG_PASSWORD.message,
+                    WRONG_PASSWORD.code);
+            }
+            await passwordHasher.compare(userByEmail.password, password);
+
+            req.userByEmail = userByEmail;
+            next();
+        } catch (e) {
+            next(e);
+        }
+    }
 };

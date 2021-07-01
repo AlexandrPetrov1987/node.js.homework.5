@@ -1,7 +1,7 @@
 const express = require('express');
-
-const {RECORD_NOT_FOUND} = require('./error/error-messages');
 const mongoose = require('mongoose');
+
+const { RECORD_NOT_FOUND } = require('./error/error-messages');
 const { usersRouter } = require('./routes');
 const { usersConst, responseCodes } = require('./const');
 
@@ -30,7 +30,7 @@ function _handleErrors(err, req, res, next) {
 
 function _notFoundHandler(req, res, next) {
     next({
-        status: responseCodes.BAD_REQUEST,
+        status: responseCodes.NOT_FOUND_ERR,
         message: RECORD_NOT_FOUND.massage,
         code: RECORD_NOT_FOUND.code
     });

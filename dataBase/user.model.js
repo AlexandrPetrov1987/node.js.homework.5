@@ -6,12 +6,11 @@ const userSchema = new Schema({
     login: {
         type: String,
         required: true,
-        max: 25
+        max: 20
     },
     password: {
         type: String,
-        required: true,
-        max: 20
+        select: false
     },
     email: {
         type: String,
