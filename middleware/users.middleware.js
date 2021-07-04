@@ -47,13 +47,13 @@ module.exports = {
             if (!(login || password || email)) {
                 throw new ErrorHandler(responseCodes.CONFLICT, FIELDS_ARE_EMPTY_ERR.massage, FIELDS_ARE_EMPTY_ERR.code);
             }
-            if (error) {
-                throw new ErrorHandler(responseCodes.BAD_REQUEST, error.details[0].message, WRONG_PASSWORD.code);
-            }
             if (emailDb) {
                 throw new ErrorHandler(responseCodes.CONFLICT, ERROR_EMAIL_CONFLICT.massage, ERROR_EMAIL_CONFLICT.code);
             } if (loginDb) {
                 throw new ErrorHandler(responseCodes.CONFLICT, ERROR_LOGIN_CONFLICT.massage, ERROR_LOGIN_CONFLICT.code);
+            }
+            if (error) {
+                throw new ErrorHandler(responseCodes.BAD_REQUEST, error.details[0].message, WRONG_PASSWORD.code);
             }
             next();
         } catch (e) {
