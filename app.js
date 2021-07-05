@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const { RECORD_NOT_FOUND } = require('./error/error-messages');
-const { usersRouter } = require('./routes');
+const { usersRouter, authRouter } = require('./routes');
 const { usersConst, responseCodes } = require('./const');
 
 const app = express();
@@ -10,7 +10,7 @@ _mongooseConnector();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/users', usersRouter);
+app.use('/users', usersRouter, authRouter);
 app.use('*', _notFoundHandler);
 app.use(_handleErrors);
 

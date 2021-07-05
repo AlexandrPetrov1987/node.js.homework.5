@@ -2,9 +2,8 @@ const { responseCodes, usersConst } = require('../const');
 const { User } = require('../dataBase');
 const { ErrorHandler } = require('../error');
 const {
-    RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, FIELDS_ARE_EMPTY_ERR, WRONG_PASSWORD, ERROR_LOGIN_CONFLICT
+    RECORD_NOT_FOUND_BY_ID, ERROR_EMAIL_CONFLICT, WRONG_PASSWORD, ERROR_LOGIN_CONFLICT
 } = require('../error/error-messages');
-const { passwordHasher } = require('../helpers');
 const { validator } = require('../validators/index');
 
 module.exports = {
@@ -15,6 +14,7 @@ module.exports = {
             if (!users.length) {
                 req.message = usersConst.DATABASE_IS_EMPTY;
             }
+
             req.users = users;
             next();
         } catch (e) {
@@ -30,6 +30,7 @@ module.exports = {
             if (!userById) {
                 throw new ErrorHandler(responseCodes.BAD_REQUEST, RECORD_NOT_FOUND_BY_ID.massage, RECORD_NOT_FOUND_BY_ID.code);
             }
+
             req.user = userById;
             next();
         } catch (e) {
@@ -37,48 +38,54 @@ module.exports = {
         }
     },
 
-    checkValid: async (req, res, next) => {
+    checkValidCreate: async (req, res, next) => {
         try {
-            const { login, password, email } = req.body;
+            const { login, email } = req.body;
+            const { error } = validator.createUser.validate(req.body);
             const emailDb = await User.findOne({ email });
             const loginDb = await User.findOne({ login });
-            const { error } = validator.createUser.validate(req.body);
 
-            if (!(login || password || email)) {
-                throw new ErrorHandler(responseCodes.CONFLICT, FIELDS_ARE_EMPTY_ERR.massage, FIELDS_ARE_EMPTY_ERR.code);
-            }
-            if (emailDb) {
-                throw new ErrorHandler(responseCodes.CONFLICT, ERROR_EMAIL_CONFLICT.massage, ERROR_EMAIL_CONFLICT.code);
-            } if (loginDb) {
-                throw new ErrorHandler(responseCodes.CONFLICT, ERROR_LOGIN_CONFLICT.massage, ERROR_LOGIN_CONFLICT.code);
-            }
             if (error) {
                 throw new ErrorHandler(responseCodes.BAD_REQUEST, error.details[0].message, WRONG_PASSWORD.code);
             }
+
+            if (emailDb) {
+                throw new ErrorHandler(responseCodes.CONFLICT, ERROR_EMAIL_CONFLICT.massage, ERROR_EMAIL_CONFLICT.code);
+            }
+
+            if (loginDb) {
+                throw new ErrorHandler(responseCodes.CONFLICT, ERROR_LOGIN_CONFLICT.massage, ERROR_LOGIN_CONFLICT.code);
+            }
+
             next();
         } catch (e) {
             next(e);
         }
     },
 
-    checkedPasswordAuth: async (req, res, next) => {
+    checkValidUpdate: async (req, res, next) => {
         try {
-            const { password, email } = req.body;
-            const userByEmail = await User.findOne({ email }).select('+password');
+            const { login, email } = req.body;
+            const emailDb = await User.findOne({ email });
+            const loginDb = await User.findOne({ login });
+            const { error } = validator.updateUser.validate(req.body);
 
-            if (!(password || email)) {
-                throw new ErrorHandler(responseCodes.CONFLICT, FIELDS_ARE_EMPTY_ERR.massage, FIELDS_ARE_EMPTY_ERR.code);
+            if (error) {
+                throw new ErrorHandler(responseCodes.BAD_REQUEST, error.details[0].message, WRONG_PASSWORD.code);
             }
-            if (!userByEmail) {
-                throw new ErrorHandler(responseCodes.WRONG_EMAIL_OR_PASSWORD, WRONG_PASSWORD.message,
-                    WRONG_PASSWORD.code);
-            }
-            await passwordHasher.compare(userByEmail.password, password);
 
-            req.userByEmail = userByEmail;
+            if (emailDb) {
+                throw new ErrorHandler(responseCodes.CONFLICT, ERROR_EMAIL_CONFLICT.massage, ERROR_EMAIL_CONFLICT.code);
+            }
+
+            if (loginDb) {
+                throw new ErrorHandler(responseCodes.CONFLICT, ERROR_LOGIN_CONFLICT.massage, ERROR_LOGIN_CONFLICT.code);
+            }
+
             next();
         } catch (e) {
             next(e);
         }
-    }
+    },
+
 };

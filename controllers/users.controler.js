@@ -47,19 +47,9 @@ module.exports = {
     updateUserByLogin: async (req, res, next) => {
         try {
             const { body, user } = req;
-            await User.findByIdAndUpdate(user._id, body);
+            await User.findByIdAndUpdate(user._id, { ...user, ...body });
 
             res.status(responseCodes.CREATED_OR_UPDATE).json(usersConst.FILE_IS_UPDATE);
-        } catch (e) {
-            next(e);
-        }
-    },
-
-    auth: (req, res, next) => {
-        try {
-            const { userByEmail } = req;
-
-            res.json(userByEmail);
         } catch (e) {
             next(e);
         }
